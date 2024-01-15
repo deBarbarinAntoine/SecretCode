@@ -1,0 +1,75 @@
+<!doctype html>
+{{define "index"}}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="static/style.css">
+    <title>SecretCode</title>
+</head>
+<body>
+<form action="/index/treatment" method="post">
+    <label for="input">Code :</label>
+    <input type="text" name ="input" id="input">
+    <p id="countdown">Cliquez sur le bouton pour commencer le compte à rebours</p>
+    <button onclick="startCountdown()">Démarrer le compte à rebours</button>
+    <p id="hide">{{.}}</p>
+</form>
+
+
+<script>
+    let seconds = 3;
+
+    function post(path, params, method='post') {
+
+        // The rest of this code assumes you are not using a library.
+        // It can be made less verbose if you use one.
+        const form = document.createElement('form');
+        form.method = method;
+        form.action = path;
+
+        for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+                const hiddenField = document.createElement('input');
+                hiddenField.type = 'hidden';
+                hiddenField.name = key;
+                hiddenField.value = params[key];
+
+                form.appendChild(hiddenField);
+            }
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function startCountdown() {
+        let countdownElement = document.getElementById('countdown');
+        let buttonElement = document.querySelector('button');
+        let hideElement = document.getElementById('hide');
+
+
+        buttonElement.disabled = true;
+
+        let countdownInterval = setInterval(function () {
+            seconds--;
+
+            if (seconds < 0) {
+                clearInterval(countdownInterval);
+                countdownElement.innerHTML = 'Le compte à rebours est terminé!';
+                buttonElement.disabled = false;
+                hideElement.style.display = "block";
+                post("/index/treatment", document.getElementById('input'), "post")
+            } else {
+                countdownElement.innerHTML = 'Temps restant : ' + seconds + ' secondes';
+            }
+        }, 1000);
+
+    }
+</script>
+</body>
+
+</html>
+{{end}}
